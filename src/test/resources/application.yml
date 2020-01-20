@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: test
+  datasource:
+    driverClassName: org.h2.Driver
+    password: ''
+    url: jdbc:h2:mem:devcave_sample_testing;MODE=PostgreSQL;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    hikari:
+      maximum-pool-size: 20
+  jpa:
+    hibernate:
+      ddl-auto: 'create-drop'
+    show-sql: true
