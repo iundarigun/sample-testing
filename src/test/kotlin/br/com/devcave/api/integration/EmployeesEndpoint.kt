@@ -29,8 +29,8 @@ class EmployeesEndpoint {
 
     private val faker = FakerFactory.faker
 
-	@Autowired
-	private lateinit var employeeRepository: EmployeeRepository
+    @Autowired
+    private lateinit var employeeRepository: EmployeeRepository
 
     @BeforeEach
     fun before() {
@@ -44,17 +44,17 @@ class EmployeesEndpoint {
 
     @Test
     fun `findAll with success`() {
-		createEmployees(10)
+        createEmployees(10)
 
-		RestAssured
-			.given()
-			.param("page", "1")
-			.param("size", "20")
-			.`when`()
-			.get("/employees")
-			.then()
-			.body("$", Matchers.hasSize<Int>(10))
-			.statusCode(HttpStatus.OK.value())
+        RestAssured
+            .given()
+            .param("page", "1")
+            .param("size", "20")
+            .`when`()
+            .get("/employees")
+            .then()
+            .body("$", Matchers.hasSize<Int>(10))
+            .statusCode(HttpStatus.OK.value())
     }
 
     @Test
@@ -174,7 +174,7 @@ class EmployeesEndpoint {
 
     private fun createEmployees(total: Int = 1): List<Employee> {
         return (1..total).map { _ ->
-			employeeRepository.save(EmployeeFactory.builderEmployee(0))
+            employeeRepository.save(EmployeeFactory.builderEmployee(0))
         }
     }
 }
