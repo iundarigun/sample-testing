@@ -71,6 +71,7 @@ tasks.withType<Test> {
 task<Test>("unitTests") {
 	useJUnitPlatform() {
 		excludeTags("integration")
+		excludeTags("system")
 		includeTags("unit")
 	}
 }
@@ -78,6 +79,15 @@ task<Test>("unitTests") {
 task<Test>("integrationTests") {
 	useJUnitPlatform() {
 		includeTags("integration")
+		excludeTags("system")
+		excludeTags("unit")
+	}
+}
+
+task<Test>("systemTests") {
+	useJUnitPlatform() {
+		excludeTags("integration")
+		includeTags("system")
 		excludeTags("unit")
 	}
 }
