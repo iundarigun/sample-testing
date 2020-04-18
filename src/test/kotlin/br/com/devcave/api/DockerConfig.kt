@@ -6,8 +6,8 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.MountableFile
 
-@Profile("docker")
 @Configuration
+@Profile("docker")
 class DockerConfig {
     companion object {
         val mock: GenericContainer<Nothing> = GenericContainer<Nothing>("postgres").also {
