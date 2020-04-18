@@ -1,12 +1,12 @@
-server:
-  port: 1980
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/devcave_sample_testing
-    username: devcave_sample_testing
-    password: devcave_sample_testing
+    url: jdbc:postgresql://localhost:55432/test
+    username: test
+    password: test
   jpa:
+    hibernate:
+      ddl-auto: none
     show-sql: true
     open-in-view: false
     properties:
@@ -17,6 +17,3 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-fraud-service:
-  url: http://localhost:1899/fraud-service

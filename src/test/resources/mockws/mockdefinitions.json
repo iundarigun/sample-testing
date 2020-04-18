@@ -1,0 +1,18 @@
+[
+  {
+    "url": "/fraud-service/12345678",
+    "file": "fraud-true.json",
+    "verbs": ["GET"],
+    "status": 200,
+    "ratioError": 0,
+    "delay": 0
+  },
+  {
+    "url": "/fraud-service",
+    "file": "fraud-false.json",
+    "verbs": ["GET"],
+    "status": 200,
+    "ratioError": 0,
+    "delay": 0
+  }
+]

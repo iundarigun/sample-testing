@@ -2,14 +2,13 @@ package br.com.devcave.api.domain.entity
 
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
+import javax.persistence.ManyToOne
 
 @Entity
 data class Employee(
@@ -19,6 +18,8 @@ data class Employee(
     var name: String,
     var document: String,
     var collageCompletedYear: Int?,
+    @field:ManyToOne
+    var sector: Sector,
     var bornAt: LocalDate,
     @CreationTimestamp
     var createdAt: LocalDateTime? = null,

@@ -1,16 +1,11 @@
 package br.com.devcave.api.integration
 
-import br.com.devcave.api.client.FraudServiceClient
 import br.com.devcave.api.domain.EmployeeResponse
-import br.com.devcave.api.domain.FraudResponse
 import br.com.devcave.api.domain.entity.Employee
 import br.com.devcave.api.factory.EmployeeFactory
 import br.com.devcave.api.factory.FakerFactory
-import br.com.devcave.api.factory.SectorFactory
 import br.com.devcave.api.repository.EmployeeRepository
-import br.com.devcave.api.repository.SectorRepository
-import com.ninjasquad.springmockk.MockkBean
-import io.mockk.every
+import io.mockk.clearAllMocks
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import org.hamcrest.Matchers
@@ -24,10 +19,28 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
+import org.testcontainers.containers.BindMode
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.containers.wait.strategy.Wait
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 
 @Tag("integration")
+@Testcontainers
+@ActiveProfiles("docker")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class EmployeesEndpoint {
+class EmployeesWithDockerEndpoint {
+
+    companion object {
+        @Container
+        val mock: GenericContainer<Nothing> = GenericContainer<Nothing>("iundarigun/mock-ws").also {
+            it.withExposedPorts(1899)
+            it.portBindings.add("18899:1899")
+            it.withClasspathResourceMapping("mockws", "/home/config", BindMode.READ_ONLY)
+            it.waitingFor(Wait.forHttp("/").forStatusCode(200))
+        }
+    }
 
     @LocalServerPort
     private val port: Int? = null
@@ -37,25 +50,14 @@ class EmployeesEndpoint {
     @Autowired
     private lateinit var employeeRepository: EmployeeRepository
 
-    @Autowired
-    private lateinit var sectorRepository: SectorRepository
-
-    @MockkBean(relaxed = true)
-    private lateinit var fraudServiceClient: FraudServiceClient
-
     @BeforeEach
     fun before() {
         RestAssured.port = port ?: 8080
-        every {
-            fraudServiceClient.validateFraud(any())
-        } returns FraudResponse(faker.idNumber().valid(), false, null)
-        if (sectorRepository.count() == 0L) {
-            sectorRepository.saveAll(SectorFactory.getAllSector())
-        }
     }
 
     @AfterEach
     fun after() {
+        clearAllMocks()
         employeeRepository.deleteAll()
     }
 
@@ -190,7 +192,7 @@ class EmployeesEndpoint {
     }
 
     private fun createEmployees(total: Int = 1): List<Employee> {
-        return (1..total).map { _ ->
+        return (1..total).map {
             employeeRepository.save(EmployeeFactory.builderEmployee(0))
         }
     }

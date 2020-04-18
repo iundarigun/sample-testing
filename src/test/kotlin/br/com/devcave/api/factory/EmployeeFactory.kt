@@ -7,6 +7,7 @@ import java.time.ZoneId
 
 object EmployeeFactory {
     private val faker = Faker.instance()
+
     fun builderRequest(): EmployeeRequest {
         return EmployeeRequest(
             name = faker.name().fullName(),
@@ -15,7 +16,8 @@ object EmployeeFactory {
             bornAt = faker.date().birthday(20, 60)
                 .toInstant()
                 .atZone(ZoneId.systemDefault())
-                .toLocalDate()
+                .toLocalDate(),
+            sector = SectorFactory.builderSector().code
         )
     }
 
@@ -28,7 +30,8 @@ object EmployeeFactory {
             bornAt = faker.date().birthday(20, 60)
                 .toInstant()
                 .atZone(ZoneId.systemDefault())
-                .toLocalDate()
+                .toLocalDate(),
+            sector = SectorFactory.builderSector()
         )
     }
 }

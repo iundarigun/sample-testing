@@ -10,6 +10,8 @@ data class EmployeeRequest(
     @field:NotBlank
     var document: String = "",
     var collageCompletedYear: Int? = 0,
+    @field:NotBlank
+    var sector: String = "",
     @field:NotNull
     var bornAt: LocalDate = LocalDate.now()
 )

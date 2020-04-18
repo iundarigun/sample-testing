@@ -25,11 +25,14 @@ import javax.validation.constraints.Min
 class EmployeeController(
     private val employeeService: EmployeeService
 ) {
+    companion object {
+        private const val maxElements = 50L
+    }
 
     @GetMapping
     fun findAll(
         @Valid @Min(1) @RequestParam(required = false, defaultValue = "1") page: Int,
-        @Valid @Min(1) @Max(50) @RequestParam(required = false, defaultValue = "20") size: Int = 20
+        @Valid @Min(1) @Max(maxElements) @RequestParam(required = false, defaultValue = "20") size: Int = 20
     ): ResponseEntity<List<EmployeeResponse>> {
         val employeeList = employeeService.findAll(page, size)
 

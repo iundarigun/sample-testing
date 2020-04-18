@@ -1,12 +1,15 @@
 package br.com.devcave.api.service
 
+import br.com.devcave.api.client.FraudServiceClient
+import br.com.devcave.api.domain.FraudResponse
 import br.com.devcave.api.domain.entity.Employee
+import br.com.devcave.api.domain.entity.Sector
 import br.com.devcave.api.exception.EmployeeAlreadyExistsException
-import br.com.devcave.api.exception.EmployeeNotFoundException
+import br.com.devcave.api.exception.EntityNotFoundException
 import br.com.devcave.api.factory.EmployeeFactory
 import br.com.devcave.api.factory.FakerFactory
 import br.com.devcave.api.repository.EmployeeRepository
-import com.github.javafaker.Faker
+import br.com.devcave.api.repository.SectorRepository
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
@@ -15,6 +18,7 @@ import io.mockk.runs
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
@@ -26,8 +30,17 @@ class EmployeeServiceTest {
     private val faker = FakerFactory.faker
 
     private val employeeRepository = mockk<EmployeeRepository>()
+    private val sectorRepository = mockk<SectorRepository>()
+    private val fraudServiceClient = mockk<FraudServiceClient>(relaxed = true)
 
-    private val employeeService = EmployeeService(employeeRepository)
+    private val employeeService = EmployeeService(employeeRepository, sectorRepository, fraudServiceClient)
+
+    @BeforeEach
+    fun beforeEach() {
+        every {
+            fraudServiceClient.validateFraud(any())
+        } returns FraudResponse(faker.idNumber().valid(), false, "")
+    }
 
     @AfterEach
     fun tearDown() {
@@ -68,7 +81,7 @@ class EmployeeServiceTest {
         }
 
         Assertions.assertNotNull(exception)
-        Assertions.assertTrue(exception is EmployeeNotFoundException)
+        Assertions.assertTrue(exception is EntityNotFoundException)
 
         verify(exactly = 1) {
             employeeRepository.existsById(any())
@@ -93,6 +106,9 @@ class EmployeeServiceTest {
         every {
             employeeToReturn.id
         } returns idToReturn
+        every {
+            sectorRepository.findByCode(any())
+        } returns Optional.of(Sector(faker.number().randomNumber(), request.sector, request.sector))
 
         val result = employeeService.createEmployee(request)
 
@@ -111,7 +127,8 @@ class EmployeeServiceTest {
                 { Assertions.assertEquals(request.name, it.name) },
                 { Assertions.assertEquals(request.document, it.document) },
                 { Assertions.assertEquals(request.collageCompletedYear, it.collageCompletedYear) },
-                { Assertions.assertEquals(request.bornAt, it.bornAt) }
+                { Assertions.assertEquals(request.bornAt, it.bornAt) },
+                { Assertions.assertEquals(request.sector, it.sector.code) }
             )
         }
     }
@@ -160,6 +177,9 @@ class EmployeeServiceTest {
         every {
             employeeRepository.save(any<Employee>())
         } returns mockk()
+        every {
+            sectorRepository.findByCode(any())
+        } returns Optional.of(Sector(faker.number().randomNumber(), request.sector, request.sector))
 
         employeeService.updateEmployee(userId, request)
 
@@ -178,7 +198,8 @@ class EmployeeServiceTest {
                 { Assertions.assertEquals(request.name, it.name) },
                 { Assertions.assertEquals(request.document, it.document) },
                 { Assertions.assertEquals(request.collageCompletedYear, it.collageCompletedYear) },
-                { Assertions.assertEquals(request.bornAt, it.bornAt) }
+                { Assertions.assertEquals(request.bornAt, it.bornAt) },
+                { Assertions.assertEquals(request.sector, it.sector.code) }
             )
         }
     }
@@ -200,7 +221,7 @@ class EmployeeServiceTest {
         }
 
         Assertions.assertNotNull(exception)
-        Assertions.assertTrue(exception is EmployeeNotFoundException)
+        Assertions.assertTrue(exception is EntityNotFoundException)
 
         verify(exactly = 1) {
             employeeRepository.existsById(any())
