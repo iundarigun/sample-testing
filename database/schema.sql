@@ -5,7 +5,7 @@ CREATE TABLE public.employee (
     created_at timestamp without time zone,
     document character varying(255),
     name character varying(255),
-    updated_date timestamp without time zone,
+    updated_at timestamp without time zone,
     sector_id bigint
 );
 
