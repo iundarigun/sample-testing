@@ -24,5 +24,5 @@ data class Employee(
     @CreationTimestamp
     var createdAt: LocalDateTime? = null,
     @UpdateTimestamp
-    var updatedDate: LocalDateTime? = null
+    var updatedAt: LocalDateTime? = null
 )
